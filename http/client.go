@@ -94,7 +94,7 @@ func (c *Client) Get(ctx context.Context, uri string, params url.Values, res int
 }
 
 // Post send post request
-func (c *Client) Post(ctx context.Context, uri, ip string, sign bool, params url.Values, res interface{}) (err error) {
+func (c *Client) Post(ctx context.Context, uri string, params url.Values, res interface{}) (err error) {
 	req, err := c.NewRequest(http.MethodPost, uri, params)
 	if err != nil {
 		return
