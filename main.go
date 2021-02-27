@@ -23,7 +23,7 @@ type resp struct {
 
 func hello(c *http.Context) {
 	var res resp
-	if err := client.Get(c.Request.Context(), baseURL+"/permit", nil, res); err != nil {
+	if err := client.Get(c.Request.Context(), baseURL+"/permit", nil, &res); err == nil {
 		log.Infof("hello request permit, resp:%s", res.Data)
 	}
 	c.Jsonify("hello")
@@ -31,7 +31,7 @@ func hello(c *http.Context) {
 
 func permit(c *http.Context) {
 	var res resp
-	if err := client.Get(c.Request.Context(), baseURL+"/verify", nil, res); err != nil {
+	if err := client.Get(c.Request.Context(), baseURL+"/verify", nil, &res); err == nil {
 		log.Infof("hello request verify, resp:%s", res.Data)
 	}
 	c.Jsonify("permit")
@@ -62,13 +62,13 @@ func main() {
 	addRoutes(engine)
 	http.InitTracer(&trace.Config{
 		ServiceName:        "Trace-test-server",
-		OpenReporter:       true,
-		Stdlog:             true,
+		OpenReporter:       true,             // open jaeger reporter
+		Stdlog:             true,             // log stdout
 		ReportHost:         "127.0.0.1:6831", // host:port -> 127.0.0.1:9941
 		SamplerType:        "const",          //const, probabilistic, rateLimiting, or remote
 		SamplerParam:       1,                // 0 or 1
 		FlushInterval:      time.Duration(1), // second, default 1
-		DisableClientTrace: false,
+		DisableClientTrace: false,            // open client trace
 	})
 	http.Start(conf, engine)
 	quit := make(chan os.Signal, 1)
