@@ -159,15 +159,16 @@ func verify(c *http.Context) {
 }
 
 // 请求http://localhost:8888/hello服务器响应以下日志
-// 2021/02/27 19:07:52 Reporting span 2ddc7a80d532336c:4e341bbddb8bb151:7551abc812599b58:1
-// [20210227 19:07:52] 200 GET /verify HTTP/1.1 (::1) 325.801µs 
-// 2021/02/27 19:07:52 Reporting span 2ddc7a80d532336c:7551abc812599b58:4bf229113da710e8:1
-// 2021/02/27 19:07:52 Reporting span 2ddc7a80d532336c:4bf229113da710e8:772eba11f44bb7ee:1
-// [20210227 19:07:52] 200 GET /permit HTTP/1.1 (::1) 2.224567ms 
-// 2021/02/27 19:07:52 Reporting span 2ddc7a80d532336c:772eba11f44bb7ee:2ddc7a80d532336c:1
-// 2021/02/27 19:07:52 Reporting span 2ddc7a80d532336c:2ddc7a80d532336c:0000000000000000:1
-// [20210227 19:07:52] 200 GET /hello HTTP/1.1 (::1) 9.59485ms 
-// 2021/02/27 19:07:53 Reporting span 2f2ebca3bb61fdf6:2f2ebca3bb61fdf6:0000000000000000:1
+// 2021/02/27 20:35:13 Reporting span 0a9cc3026e52249d:52587282fb708af9:4896f92cfd763f0b:1
+// [20210227 20:35:13] 200 GET /verify HTTP/1.1 (::1) 82.635µs 
+// 2021/02/27 20:35:13 Reporting span 0a9cc3026e52249d:4896f92cfd763f0b:048629f89ffbcba3:1
+// INFO[0014] hello request verify, resp:verify            
+// 2021/02/27 20:35:13 Reporting span 0a9cc3026e52249d:048629f89ffbcba3:5df237a3658986e1:1
+// [20210227 20:35:13] 200 GET /permit HTTP/1.1 (::1) 585.927µs 
+// 2021/02/27 20:35:13 Reporting span 0a9cc3026e52249d:5df237a3658986e1:0a9cc3026e52249d:1
+// INFO[0014] hello request permit, resp:permit            
+// 2021/02/27 20:35:13 Reporting span 0a9cc3026e52249d:0a9cc3026e52249d:0000000000000000:1
+// [20210227 20:35:13] 200 GET /hello HTTP/1.1 (::1) 990.624µs
 ```
 
 #### License
