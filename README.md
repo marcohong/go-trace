@@ -4,7 +4,7 @@
 golang opentracing 结合gin框架的链路追踪demo
 
 #### 软件架构
-基于gin+opentracing+jaeger实现的链路追踪
+基于gin+opentracing-go+jaeger(兼容Zipkin)实现微服务下的链路追踪
 
 golang > 1.10
 
@@ -22,7 +22,7 @@ golang > 1.10
    # 访问http://localhost:8888/hello
    ```
 
-2. 使用docker拉取最新的jaeger，执行以下命令启动jaeger:
+2. 使用docker拉取最新的jaeger，执行以下命令启动jaeger
 
    ```shell
    docker pull jaegertracing/all-in-one
@@ -38,7 +38,7 @@ golang > 1.10
 1. 创建一个jaeger tracer并设置全局的tracer
 
    ```go
-   // go-trace/http/trace.go
+   // go-trace/trace/trace.go
    type Config struct {
    	ServiceName        string 			 // 服务名
    	OpenReporter       bool					 // 是否上报到追踪系统
@@ -63,6 +63,8 @@ golang > 1.10
    		},
    	}
    	// coding...
+     // jaeger可以随意替换其它库
+     tracer, closer, err := cfg.NewTracer(opts...)
    	SetGlobalTracer(tracer)
    	DisableClientTrace = c.DisableClientTrace
    	return tracer, closer
@@ -156,7 +158,7 @@ func verify(c *http.Context) {
 	c.Jsonify("verify")
 }
 
-// 请求http://localhost:8888/hello响应以下结果
+// 请求http://localhost:8888/hello服务器响应以下日志
 // 2021/02/27 19:07:52 Reporting span 2ddc7a80d532336c:4e341bbddb8bb151:7551abc812599b58:1
 // [20210227 19:07:52] 200 GET /verify HTTP/1.1 (::1) 325.801µs 
 // 2021/02/27 19:07:52 Reporting span 2ddc7a80d532336c:7551abc812599b58:4bf229113da710e8:1
@@ -168,19 +170,7 @@ func verify(c *http.Context) {
 // 2021/02/27 19:07:53 Reporting span 2f2ebca3bb61fdf6:2f2ebca3bb61fdf6:0000000000000000:1
 ```
 
-#### 参与贡献
+#### License
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+go-trace项目使用MIT license
 
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
