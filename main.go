@@ -3,6 +3,7 @@ package main
 import (
 	"go-trace/http"
 	"go-trace/trace"
+	xhttp "net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -37,6 +38,10 @@ func permit(c *http.Context) {
 	c.Jsonify("permit")
 }
 
+func redirect(c *http.Context) {
+	c.Redirect(xhttp.StatusMovedPermanently, "/verify")
+}
+
 func verify(c *http.Context) {
 	c.Jsonify("verify")
 }
@@ -45,6 +50,7 @@ func addRoutes(e *http.Engine) {
 	e.GET("/hello", http.Handle(hello))
 	e.GET("/verify", http.Handle(verify))
 	e.GET("/permit", http.Handle(permit))
+	e.GET("/redirect", http.Handle(redirect))
 }
 
 func main() {
@@ -62,13 +68,13 @@ func main() {
 	addRoutes(engine)
 	http.InitTracer(&trace.Config{
 		ServiceName:        "Trace-test-server",
-		OpenReporter:       true,             // open jaeger reporter
-		Stdlog:             true,             // log stdout
-		ReportHost:         "127.0.0.1:6831", // host:port -> 127.0.0.1:9941
-		SamplerType:        "const",          //const, probabilistic, rateLimiting, or remote
-		SamplerParam:       1,                // 0 or 1
-		FlushInterval:      time.Duration(1), // second, default 1
-		DisableClientTrace: false,            // open client trace
+		OpenReporter:       true,                           // open jaeger reporter
+		Stdlog:             true,                           // log stdout
+		ReportHost:         "127.0.0.1:6831",               // host:port -> 127.0.0.1:9941
+		SamplerType:        "const",                        //const, probabilistic, rateLimiting, or remote
+		SamplerParam:       1,                              // 0 or 1
+		FlushInterval:      time.Duration(1 * time.Second), // second, default 1
+		DisableClientTrace: false,                          // open client trace
 	})
 	http.Start(conf, engine)
 	quit := make(chan os.Signal, 1)
