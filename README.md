@@ -140,7 +140,7 @@ var (
 func hello(c *http.Context) {
 	var res resp
   // client.Get传入的context不能是gin.Context
-	if err := client.Get(c.Request.Context(), baseURL+"/permit", nil, res); err != nil {
+	if err := client.Get(c.Request.Context(), baseURL+"/permit", nil, res); err == nil {
 		log.Infof("hello request permit, resp:%s", res.Data)
 	}
 	c.Jsonify("hello")
@@ -148,7 +148,7 @@ func hello(c *http.Context) {
 
 func permit(c *http.Context) {
 	var res resp
-	if err := client.Get(c.Request.Context(), baseURL+"/verify", nil, res); err != nil {
+	if err := client.Get(c.Request.Context(), baseURL+"/verify", nil, res); err == nil {
 		log.Infof("hello request verify, resp:%s", res.Data)
 	}
 	c.Jsonify("permit")
