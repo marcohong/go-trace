@@ -56,7 +56,7 @@ func Trace() gin.HandlerFunc {
 		t.SetTag(trace.Tag(trace.TagComponent, defaultComponentName))
 		t.SetTag(trace.Tag(trace.TagHTTPMethod, c.Request.Method))
 		t.SetTag(trace.Tag(trace.TagHTTPURL, c.Request.URL.String()))
-		reqCtx := opentracing.ContextWithSpan(cx, t.GetSpan())
+		reqCtx := trace.ContextWithSpan(cx, t.GetSpan())
 		if !trace.DisableClientTrace {
 			clientTrace := Tracer{t}
 			reqCtx = httptrace.WithClientTrace(reqCtx, clientTrace.ClientTrace())

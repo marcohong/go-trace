@@ -70,7 +70,7 @@ func main() {
 		ServiceName:        "Trace-test-server",
 		OpenReporter:       true,                           // open jaeger reporter
 		Stdlog:             true,                           // log stdout
-		ReportHost:         "127.0.0.1:6831",               // host:port -> 127.0.0.1:9941
+		ReportHost:         "127.0.0.1:6831",               // host:port -> 127.0.0.1:6831
 		SamplerType:        "const",                        //const, probabilistic, rateLimiting, or remote
 		SamplerParam:       1,                              // 0 or 1
 		FlushInterval:      time.Duration(1 * time.Second), // second, default 1
