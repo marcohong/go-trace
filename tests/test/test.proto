@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+// option object_class_prefix = "HLW";
+
+package tests;
+
+service Test {
+    // Send test message
+    rpc SayHello (HelloRequest) returns (HelloResponse) {}
+}
+
+// The request message containing the user name
+message HelloRequest {
+    string name = 1;
+}
+
+// The response message containing the data
+message HelloResponse {
+    string name = 1;
+}
