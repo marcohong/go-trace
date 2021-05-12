@@ -61,6 +61,7 @@ func Trace() gin.HandlerFunc {
 			clientTrace := Tracer{t}
 			reqCtx = httptrace.WithClientTrace(reqCtx, clientTrace.ClientTrace())
 		}
+		cx.Set(trace.CtxKey, t.GetSpan())
 		// set http.Request context, because client.Get(ctx) use http.Request.Context()
 		cx.Request = cx.Request.WithContext(reqCtx)
 		cx.Next()
@@ -74,8 +75,8 @@ func (t *TraceTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt == nil {
 		rt = http.DefaultTransport
 	}
-	tr, parentCtx := trace.StartSpanFromContext(req.Context(), fmt.Sprintf("Client-HTTP:%s", req.Method))
-	if parentCtx == nil {
+	tr, ok := trace.StartSpanFromContext(req.Context(), fmt.Sprintf("Client-HTTP:%s", req.Method))
+	if !ok {
 		return rt.RoundTrip(req)
 	}
 	tr.SetTag(trace.Tag(trace.TagComponent, defaultComponentName))
