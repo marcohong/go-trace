@@ -19,6 +19,8 @@ var (
 	maxLogs = 256
 	// DisableClientTrace .
 	DisableClientTrace = false
+	// CtxKey gin.Context trace key
+	CtxKey = "library/net/trace.trace"
 )
 
 // Config trace config
@@ -91,15 +93,30 @@ func StartSpan(operationName string, opts ...opentracing.StartSpanOption) Tracer
 }
 
 // StartSpanFromContext if context contains parent, return child span
-func StartSpanFromContext(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (Tracer, context.Context) {
+func StartSpanFromContext(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (Tracer, bool) {
 	parent := opentracing.SpanFromContext(ctx)
+	var tracer Tracer
 	if parent != nil {
 		opts = append(opts, opentracing.ChildOf(parent.Context()))
 	} else {
-		parent = _tracer.StartSpan(operationName, opts...)
+		return tracer, false
 	}
 	span := _tracer.StartSpan(operationName, opts...)
-	return New(span), ContextWithSpan(ctx, span)
+	tracer = New(span)
+	return tracer, true
+}
+
+// StartSpanFromContextV2 if context contains parent, return child span
+func StartSpanFromContextV2(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (Tracer, bool) {
+	var tracer Tracer
+	if val, ok := ctx.Value(CtxKey).(opentracing.Span); ok {
+		opts = append(opts, opentracing.ChildOf(val.(opentracing.Span).Context()))
+	} else {
+		return tracer, false
+	}
+	span := _tracer.StartSpan(operationName, opts...)
+	tracer = New(span)
+	return tracer, true
 }
 
 // Tag return opentracing.tag struct
@@ -158,16 +175,31 @@ func (t *Tracer) StartSpan(operationName string, opts ...opentracing.StartSpanOp
 	return NewWithTrace(t.Trace, span)
 }
 
+// SpanFromContext .
+func SpanFromContext(ctx context.Context) (t Tracer, ok bool) {
+	parent := opentracing.SpanFromContext(ctx)
+	if parent != nil {
+		t = New(parent)
+		ok = true
+	}
+	return
+}
+
 // StartSpanFromContext if context contains parent, return child span
-func (t *Tracer) StartSpanFromContext(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (Tracer, context.Context) {
+func (t *Tracer) StartSpanFromContext(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (Tracer, bool) {
 	parent := opentracing.SpanFromContext(ctx)
 	if parent != nil {
 		opts = append(opts, opentracing.ChildOf(parent.Context()))
-	} else {
-		parent = t.Trace.StartSpan(operationName, opts...)
 	}
 	span := t.Trace.StartSpan(operationName, opts...)
-	return NewWithTrace(t.Trace, span), ContextWithSpan(ctx, span)
+	//  ContextWithSpan(ctx, span)
+	return NewWithTrace(t.Trace, span), true
+}
+
+// ContextWithSpan return span context
+func (t *Tracer) ContextWithSpan(ctx context.Context) context.Context {
+	return opentracing.ContextWithSpan(ctx, t.span)
+
 }
 
 // Finish when trace finish call it.
