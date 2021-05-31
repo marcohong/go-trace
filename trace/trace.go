@@ -99,7 +99,11 @@ func StartSpanFromContext(ctx context.Context, operationName string, opts ...ope
 	if parent != nil {
 		opts = append(opts, opentracing.ChildOf(parent.Context()))
 	} else {
-		return tracer, false
+		if val, ok := ctx.Value(CtxKey).(opentracing.Span); ok {
+			opts = append(opts, opentracing.ChildOf(val.(opentracing.Span).Context()))
+		} else {
+			return tracer, false
+		}
 	}
 	span := _tracer.StartSpan(operationName, opts...)
 	tracer = New(span)
@@ -190,6 +194,10 @@ func (t *Tracer) StartSpanFromContext(ctx context.Context, operationName string,
 	parent := opentracing.SpanFromContext(ctx)
 	if parent != nil {
 		opts = append(opts, opentracing.ChildOf(parent.Context()))
+	} else {
+		if val, ok := ctx.Value(CtxKey).(opentracing.Span); ok {
+			opts = append(opts, opentracing.ChildOf(val.(opentracing.Span).Context()))
+		}
 	}
 	span := t.Trace.StartSpan(operationName, opts...)
 	//  ContextWithSpan(ctx, span)

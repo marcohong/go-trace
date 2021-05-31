@@ -50,7 +50,8 @@ func OpentracingServerInterceptor(t trace.Tracer) grpc.UnaryServerInterceptor {
 			t = t.StartSpan(info.FullMethod, ext.RPCServerOption(spanCtx), tag, ext.SpanKindRPCServer)
 		}
 		defer t.Finish(nil)
-		ctx = trace.ContextWithSpan(ctx, t.GetSpan())
+		// ctx = trace.ContextWithSpan(ctx, t.GetSpan())
+		ctx = context.WithValue(ctx, trace.CtxKey, t.GetSpan())
 		return handler(ctx, req)
 	}
 }
