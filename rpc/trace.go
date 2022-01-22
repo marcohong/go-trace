@@ -59,8 +59,8 @@ func OpentracingServerInterceptor(t trace.Tracer) grpc.UnaryServerInterceptor {
 // OpentracingClientInterceptor rewrite client's interceptor with open tracing
 func OpentracingClientInterceptor(t trace.Tracer) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		tag := trace.Tag(string(trace.TagComponent), "gRPC")
-		tr, _ := trace.StartSpanFromContext(ctx, method, tag, ext.SpanKindRPCClient)
+		tr, _ := t.StartSpanFromContext(ctx, method, ext.SpanKindRPCClient)
+		_ = tr.SetTag(trace.Tag(trace.TagComponent, "gRPC"))
 		md, ok := metadata.FromOutgoingContext(ctx)
 		if !ok {
 			md = metadata.New(nil)
